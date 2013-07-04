@@ -99,6 +99,7 @@ ImageGallery.showImage = function(image) {
     imageView.render();
     $("#main").html(imageView.el);
 };
+
 $(function() {
     
     var imageData = [
