@@ -51,11 +51,7 @@ ImageGallery.ImageListView = Backbone.View.extend({
     tagName: "ul",
 //    template: "#image-preview-template",
     template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
-    initialize: function(){
-        _.bindAll(this, "renderImage");
-        this.template = $(this.template);
-        this.collection.bind("add", this.renderImage, this);
-    },
+/*
     events: {
         "click a": "imageClicked"
     },
@@ -67,16 +63,30 @@ ImageGallery.ImageListView = Backbone.View.extend({
         ImageGallery.vent.trigger("image:selected", image);
         
     },
+    
+*/
+    initialize: function(){
+        _.bindAll(this, "renderImage");
+//        this.template = $(this.template);
+        this.collection.bind("add", this.renderImage, this);
+    },
+    
     renderImage: function(image){
+        var imagePreview = new ImageGallery.ImagePreview({model: image});
+        imagePreview.render();
+        $(this.el).prepend(imagePreview.el);
+        /*
         var html = this.template.tmpl(image.toJSON());
         // prepend so that newest image is put at top
         $(this.el).prepend(html);
+        */
     },
     render: function() {
         this.collection.each(this.renderImage);
     }
 });
 ImageGallery.ImageView = Backbone.View.extend({
+    
     template: "#image-view-template",
     className: "image-view",
     
@@ -84,7 +94,43 @@ ImageGallery.ImageView = Backbone.View.extend({
         var html = $(this.template).tmpl(this.model.toJSON());
         $(this.el).html(html);
     }
+    
 });
+
+ImageGallery.ImagePreview = Backbone.View.extend({
+//    template: "#image-preview-template",
+    template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
+    
+    events: {
+        "click a": "imageClicked"
+    }, 
+    imageClicked: function(e) {
+        e.preventDefault();
+ //       var id = $(e.currentTarget).data("id");
+//        var image = this.collection.get(id);
+        ImageGallery.vent.trigger("image:selected", this.model);    
+    },
+    initialize: function() {
+        this.template = $(this.template);
+    },
+    render: function(){
+        var html = this.template.tmpl(this.model.toJSON());
+        $(this.el).html(html);  
+    }
+});
+
+// *****************************************
+
+
+
+
+
+
+
+
+
+
+
 ImageGallery.addImage = function(images) {
     var image = new ImageGallery.Image();
     var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
