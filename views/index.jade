@@ -1,5 +1,33 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  #container
+    #header
+      ul#menu
+        li &nbsp;
+    #main
+      form#add-image-form
+        h1 Add Image
+        ul
+          li
+            label(for="image-url") Image Url:
+            input#url(type="text", name="url")
+          li
+            label(for="preview") Preview:
+            #image-preview
+              img#preview
+          li
+            label(for="name") Image Name:
+            input#name(type="text", name="name")
+          li
+            label(for="description") Description:
+            textarea#description(name="description")
+          li.save-cancel
+            a#cancel(href="/") cancel
+            input#save(type="submit", name="Save", value="Save")
+    #sidebar
+      #image-list
+    #footer
+        Copyright 2011
+          #a(href="http://www.pragprog.om") The Pragmatic Programmers
+        
