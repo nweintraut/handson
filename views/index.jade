@@ -1,7 +1,12 @@
 extends layout
 
 block content
-
+  script(type="text/x-jquery-tmp", id="image-view-template").
+    <h2>${name}</h2>
+    <div class="nav-next"><a href="#">&lt;</a></div>
+    <div class="nav-previous"><a href="#">&gt;</div>
+    <img src="${url}" width="300" height="200" alt="${description}">
+    <div class="description">${description}"</div>
   script(type="text/x-jquery-tmp", id="add-image-template").
       <h1>Add Image</h1>
       <ul>

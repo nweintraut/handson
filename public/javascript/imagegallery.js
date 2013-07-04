@@ -6,6 +6,7 @@ ImageGallery.Image = Backbone.Model.extend({
     
 });
 
+ImageGallery.vent = _.extend({}, Backbone.Events);
 ImageGallery.ImageCollection= Backbone.Collection.extend({
     model: ImageGallery.Image
 });
@@ -49,13 +50,23 @@ ImageGallery.AddImageView = Backbone.View.extend ({
 ImageGallery.ImageListView = Backbone.View.extend({
     tagName: "ul",
 //    template: "#image-preview-template",
-    template: '<li><a href="#"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
+    template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
     initialize: function(){
         _.bindAll(this, "renderImage");
         this.template = $(this.template);
         this.collection.bind("add", this.renderImage, this);
     },
-
+    events: {
+        "click a": "imageClicked"
+    },
+    imageClicked: function(e) {
+        e.preventDefault();
+        var id= $(e.currentTarget).data("id");
+        var image = this.collection.get(id);
+        // tell the app the image was clicked
+        ImageGallery.vent.trigger("image:selected", image);
+        
+    },
     renderImage: function(image){
         var html = this.template.tmpl(image.toJSON());
         // prepend so that newest image is put at top
@@ -65,6 +76,15 @@ ImageGallery.ImageListView = Backbone.View.extend({
         this.collection.each(this.renderImage);
     }
 });
+ImageGallery.ImageView = Backbone.View.extend({
+    template: "#image-view-template",
+    className: "image-view",
+    
+    render: function(){
+        var html = $(this.template).tmpl(this.model.toJSON());
+        $(this.el).html(html);
+    }
+});
 ImageGallery.addImage = function(images) {
     var image = new ImageGallery.Image();
     var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
@@ -72,6 +92,13 @@ ImageGallery.addImage = function(images) {
     $("#main").html(addImageView.el);
 };
 
+ImageGallery.showImage = function(image) {
+    var imageView = new ImageGallery.ImageView({
+        model:image
+    });
+    imageView.render();
+    $("#main").html(imageView.el);
+};
 $(function() {
     
     var imageData = [
@@ -105,7 +132,9 @@ $(function() {
 
     ImageGallery.addImage(images);
 
-    images.bind("add", function(){ImageGallery.addImage(images)});
+    images.bind("add", function(){ImageGallery.addImage(images)}); // important bind technique
+    
+    ImageGallery.vent.bind("image:selected", ImageGallery.showImage);
     
     var imageListView = new ImageGallery.ImageListView({collection:images}); 
     imageListView.render();
