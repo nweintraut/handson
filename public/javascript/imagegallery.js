@@ -97,6 +97,24 @@ ImageGallery.ImageView = Backbone.View.extend({
     
 });
 
+ImageGallery.Router = Backbone.Router.extend({
+    routes: {
+        "": "newImage",
+        "images/new": "newImage",
+        "images/:id": "showImage"
+    },
+    initialize: function(options) {
+        this.collection = options.collection;
+    },
+    showImage: function(id) {
+        var image = this.collection.get(id);
+        ImageGallery.showImage(image);
+    },
+    newImage: function(){
+        ImageGallery.addImage(this.collection);
+    }
+});
+
 ImageGallery.ImagePreview = Backbone.View.extend({
 //    template: "#image-preview-template",
     template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
@@ -106,8 +124,6 @@ ImageGallery.ImagePreview = Backbone.View.extend({
     }, 
     imageClicked: function(e) {
         e.preventDefault();
- //       var id = $(e.currentTarget).data("id");
-//        var image = this.collection.get(id);
         ImageGallery.vent.trigger("image:selected", this.model);    
     },
     initialize: function() {
@@ -118,17 +134,6 @@ ImageGallery.ImagePreview = Backbone.View.extend({
         $(this.el).html(html);  
     }
 });
-
-// *****************************************
-
-
-
-
-
-
-
-
-
 
 
 ImageGallery.addImage = function(images) {
@@ -181,10 +186,15 @@ $(function() {
 
     images.bind("add", function(){ImageGallery.addImage(images)}); // important bind technique
     
-    ImageGallery.vent.bind("image:selected", ImageGallery.showImage);
+    ImageGallery.vent.bind("image:selected", function(image) {
+        ImageGallery.showImage(image);
+        router.navigate("images/" + image.id);
+    });
     
     var imageListView = new ImageGallery.ImageListView({collection:images}); 
     imageListView.render();
     $("#image-list").html(imageListView.el);
+    var router = new ImageGallery.Router({collection:images});
+    Backbone.history.start();
 
 });
