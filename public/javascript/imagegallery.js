@@ -17,6 +17,30 @@ ImageGallery.Image = Backbone.Model.extend({
 ImageGallery.vent = _.extend({}, Backbone.Events);
 ImageGallery.ImageCollection= Backbone.Collection.extend({
     model: ImageGallery.Image,
+    initialize: function() {
+        ImageGallery.vent.bind("image:previous", this.previousImage, this );
+        ImageGallery.vent.bind("image:next", this.nextImage, this);
+    },
+    previousImage: function() {
+        var index = this.indexOf(this.selectedImage);
+        if (index > 0) {
+            index -= 1;
+        } else {
+            index = this.length - 1;
+        }
+        var image = this.at(index);
+        image.select();
+    },
+    nextImage: function() {
+        var index = this.indexOf(this.selectedImage);
+        if (index < this.length -1) {
+            index += 1;
+        } else { 
+            index = 0;
+        }
+        var image = this.at(index);
+        image.select();
+    },
     select: function(image) {
         this.deselect();
         this.selectedImage = image;
@@ -89,8 +113,8 @@ ImageGallery.ImageListView = Backbone.View.extend({
         this.collection.bind("add", this.renderImage, this);
     },
     
-    renderImage: function(image){
-        var imagePreview = new ImageGallery.ImagePreview({model: image});
+    renderImage: function(image){        
+        var imagePreview = new ImageGallery.ImagePreview({model: image});      
         imagePreview.render();
         $(this.el).prepend(imagePreview.el);
         /*
@@ -107,7 +131,18 @@ ImageGallery.ImageView = Backbone.View.extend({
     
     template: "#image-view-template",
     className: "image-view",
-    
+    events: {
+        "click .nav-previous a": "previousImage",
+        "click .nav-next a": "nextImage"
+    },
+    previousImage: function(e) {
+        e.preventDefault();
+        ImageGallery.vent.trigger("image:previous");
+    },
+    nextImage: function (e) {
+        e.preventDefault();
+        ImageGallery.vent.trigger("image:next");
+    },
     render: function(){
         var html = $(this.template).tmpl(this.model.toJSON());
         $(this.el).html(html);
@@ -135,8 +170,8 @@ ImageGallery.Router = Backbone.Router.extend({
 });
 
 ImageGallery.ImagePreview = Backbone.View.extend({
-//    template: "#image-preview-template",
-    template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
+    template: "#image-preview-template",
+//    template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
     
     events: {
         "click a": "imageClicked"
@@ -146,9 +181,10 @@ ImageGallery.ImagePreview = Backbone.View.extend({
         this.model.select();
 //        ImageGallery.vent.trigger("image:selected", this.model);    
     },
-    initialize: function() {
-        this.template = $(this.template);
+    initialize: function() {      
+        this.template = $(this.template);  
         this.model.bind("change:selected", this.imageSelected, this);
+
     },
     imageSelected: function(){
         this.$("img").toggleClass("selected");
@@ -215,10 +251,11 @@ $(function() {
         ImageGallery.showImage(image);
         router.navigate("images/" + image.id);
     });
-    
-    var imageListView = new ImageGallery.ImageListView({collection:images}); 
+  
+    var imageListView = new ImageGallery.ImageListView({collection:images});
     imageListView.render();
     $("#image-list").html(imageListView.el);
+      
     var router = new ImageGallery.Router({collection:images});
     Backbone.history.start();
 
