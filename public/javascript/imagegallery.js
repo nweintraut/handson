@@ -35,14 +35,10 @@ ImageGallery.AddImageView = Backbone.View.extend ({
     },
     saveImage: function(e){
         e.preventDefault();
-        var name = this.model.get("name");
-        var desc = this.model.get("description");
-        var url  = this.model.get("url");
-        var message = "Name: " + name + "\n";
-        message += "Description: " + desc + "\n";
-        message += "URL: " + url;
-        this.collection.add(this.model);
-        alert(message);            
+ //       var name = this.model.get("name");
+ //       var desc = this.model.get("description");
+ //       var url  = this.model.get("url");
+        this.collection.add(this.model);           
     },
     render: function(){
         var html = $(this.template).tmpl();
@@ -55,27 +51,64 @@ ImageGallery.ImageListView = Backbone.View.extend({
 //    template: "#image-preview-template",
     template: '<li><a href="#"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',
     initialize: function(){
-        this.collection.bind("add", this.imageAdded, this);
+        _.bindAll(this, "renderImage");
+        this.template = $(this.template);
+        this.collection.bind("add", this.renderImage, this);
     },
-    imageAdded: function(image){
-        var html = $(this.template).tmpl(image.toJSON());
+
+    renderImage: function(image){
+        var html = this.template.tmpl(image.toJSON());
         // prepend so that newest image is put at top
         $(this.el).prepend(html);
+    },
+    render: function() {
+        this.collection.each(this.renderImage);
     }
 });
-$(function() {
-    var images = new ImageGallery.ImageCollection();    
-    // var image = new ImageGallery.Image();
-    var addImage = function() {
-        var image = new ImageGallery.Image();
-        var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
-        addImageView.render();
-        $("#main").html(addImageView.el);
-    };
-    addImage();
+ImageGallery.addImage = function(images) {
+    var image = new ImageGallery.Image();
+    var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
+    addImageView.render();
+    $("#main").html(addImageView.el);
+};
 
-    images.bind("add", addImage, this);
+$(function() {
     
-    var imageListView = new ImageGallery.ImageListView({collection:images});
+    var imageData = [
+        {
+            id: 1,
+            url: "/images/island.jpeg",
+            name: "Some island",
+        },
+        {
+            id: 2,
+            url: "/images/mountain.jpeg",
+            name: "A mountain",
+            description: "A mountin with a grassy hill and tree in front of it."
+        },
+        {
+            id: 3,
+            url: "/images/tools.jpeg",
+            name: "A rusty wrench",
+            description: "A close up view of a rusty wrench with great color and texture."
+        }, 
+        {
+            id: 4,
+            url: "images/tree.jpeg",
+            name: "A purple flower",
+            description: "A purple flower with a water drop hanging off another plant."
+        }
+    ];
+    
+    var images = new ImageGallery.ImageCollection(imageData);    
+    // var image = new ImageGallery.Image();
+
+    ImageGallery.addImage(images);
+
+    images.bind("add", function(){ImageGallery.addImage(images)});
+    
+    var imageListView = new ImageGallery.ImageListView({collection:images}); 
+    imageListView.render();
     $("#image-list").html(imageListView.el);
+
 });
