@@ -4,6 +4,7 @@ var ImageGallery = ImageGallery || {};
 
 ImageGallery.Image = Backbone.Model.extend({
     select: function() {
+        if(this.get("selected")) return;
         this.set({selected: true});
         this.collection.select(this);
         ImageGallery.vent.trigger("image:selected", this);
@@ -17,10 +18,14 @@ ImageGallery.vent = _.extend({}, Backbone.Events);
 ImageGallery.ImageCollection= Backbone.Collection.extend({
     model: ImageGallery.Image,
     select: function(image) {
+        this.deselect();
+        this.selectedImage = image;
+    },
+    deselect: function() {
         if (this.selectedImage) {
             this.selectedImage.deselect();
-        }
-        this.selectedImage = image;
+            delete this.selectedImage;
+        }        
     }
 });
 
@@ -121,6 +126,7 @@ ImageGallery.Router = Backbone.Router.extend({
     },
     showImage: function(id) {
         var image = this.collection.get(id);
+        image.select();
         ImageGallery.showImage(image);
     },
     newImage: function(){
@@ -155,6 +161,7 @@ ImageGallery.ImagePreview = Backbone.View.extend({
 
 
 ImageGallery.addImage = function(images) {
+    images.deselect();
     var image = new ImageGallery.Image();
     var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
     addImageView.render();
