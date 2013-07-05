@@ -218,7 +218,7 @@ ImageGallery.ImagePreview = Backbone.View.extend({
     },
     initialize: function() {      
         this.template = $(this.template);  
-        this.model.bind("change:selected", this.imageSelected, this);
+        this.model.bind("selected", this.imageSelected, this);
         this.model.bind("change", this.render, this);
 
     },
