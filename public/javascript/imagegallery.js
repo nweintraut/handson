@@ -201,7 +201,8 @@ ImageGallery.addImage = function(images) {
     var image = new ImageGallery.Image();
     var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
     addImageView.render();
-    $("#main").html(addImageView.el);
+//    $("#main").html(addImageView.el);
+    ImageGallery.mainRegion.show(addImageView);
 };
 
 ImageGallery.showImage = function(image) {
@@ -209,11 +210,20 @@ ImageGallery.showImage = function(image) {
         model:image
     });
     imageView.render();
-    $("#main").html(imageView.el);
+//    $("#main").html(imageView.el);
+    ImageGallery.mainRegion.show(imageView);
+};
+
+ImageGallery.MainRegion = function() {
+    this.el = $("#main");
+    this.show = function(view) {
+        view.render();
+        this.el.html(view.el);
+    }
 };
 
 $(function() {
-    
+    ImageGallery.mainRegion = new ImageGallery.MainRegion();
     var imageData = [
         {
             id: 1,
