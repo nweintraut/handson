@@ -7,6 +7,7 @@ ImageGallery.addRegions({
     mainRegion: "#main"
 });
 ImageGallery.Image = Backbone.Model.extend({
+    urlRoot: "/images",
     select: function() {
         if(this.get("selected")) return;
         this.set({selected: true});
@@ -68,6 +69,9 @@ ImageGallery.AddImageView = Backbone.View.extend ({
         "change #url": "urlChanged",
         "click #save": "saveImage"
     },
+    initialize: function() {
+        _.bindAll(this,"saveSuccess", "saveError");
+    },
     nameChanged: function(e){
         var value = $(e.currentTarget).val();
         this.model.set({name: value});
@@ -86,7 +90,19 @@ ImageGallery.AddImageView = Backbone.View.extend ({
  //       var name = this.model.get("name");
  //       var desc = this.model.get("description");
  //       var url  = this.model.get("url");
-        this.collection.add(this.model);           
+        this.model.save(undefined, { // could specify model's own attributes.
+            success: this.saveSuccess,
+            error: this.saveError
+        });
+   
+
+    },
+    saveSuccess: function(image, response, xhrObjectfromXHRCall) {
+        this.collection.add(image);
+        image.select();
+    },
+    saveError:  function(image, response, xhrObjectfromXHRCall) {
+        alert("Error" + response);
     },
     render: function(){
         var html = $(this.template).tmpl();
@@ -116,7 +132,7 @@ ImageGallery.ImageListView = Backbone.View.extend({
         _.bindAll(this, "renderImage");
 //        this.template = $(this.template);
         this.collection.bind("add", this.renderImage, this);
-        this.collection.bind("reset", this.render, this);
+        this.collection.bind("reset", this.render, this); // should this come out now?
     },
     
     renderImage: function(image){        
@@ -228,13 +244,13 @@ ImageGallery.MainRegion = function() {
     }
 };
 */
-ImageGallery.addInitializer(function(){ 
-// ImageGallery.addInitializer(function(options){    
-    var images = new ImageGallery.ImageCollection();
-//    var images = new ImageGallery.ImageCollection(options.imageData);    
+// ImageGallery.addInitializer(function(){ 
+ImageGallery.addInitializer(function(options){    
+//    var images = new ImageGallery.ImageCollection();
+    var images = new ImageGallery.ImageCollection(options.imageData);    
     // var image = new ImageGallery.Image();
 
-//    ImageGallery.addImage(images);
+    ImageGallery.addImage(images);
 
     images.bind("add", function(){ImageGallery.addImage(images)}); // important bind technique
     
@@ -248,7 +264,7 @@ ImageGallery.addInitializer(function(){
     $("#image-list").html(imageListView.el);
       
     var router = new ImageGallery.Router({collection:images});
-    images.fetch();
+//    images.fetch();
 });
 
 ImageGallery.bind("initialize:after", function() {

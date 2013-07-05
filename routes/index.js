@@ -21,7 +21,7 @@ exports.postAnImage = function(req, res, next) {
         name: req.body.name,
         description: req.body.description
     };
-    image = imageData.add(image);
+    image = imageData.addImage(image);
     res.set("Content-Type", "text/json");
     res.json(image);
 //    res.end(JSON.stringify(image, null, 2));
