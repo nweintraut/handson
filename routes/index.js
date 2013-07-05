@@ -57,6 +57,10 @@ exports.deleteAnImage = function(req, res, next) {
     });
 */
 };
+exports.edit = function(req, res, next) {
+    var image = imageData.getImage(req.query.id);
+    res.json(image);
+};
 
 exports.updateAnImage = function(req, res, next) {
     var image = {

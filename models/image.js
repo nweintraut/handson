@@ -45,3 +45,6 @@ exports.update = function(image) {
 exports.delete = function(id) {
     delete imageData[id];
 };
+exports.getImage = function(id) {
+    return imageData[id];
+};

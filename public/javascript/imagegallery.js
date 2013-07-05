@@ -176,7 +176,8 @@ ImageGallery.Router = Backbone.Router.extend({
     routes: {
         "": "newImage",
         "images/new": "newImage",
-        "images/:id": "showImage"
+        "images/:id": "showImage",
+        "images/:id/edit": "editImage"
     },
     initialize: function(options) {
         this.collection = options.collection;
@@ -188,6 +189,10 @@ ImageGallery.Router = Backbone.Router.extend({
     },
     newImage: function(){
         ImageGallery.addImage(this.collection);
+    },
+    editImage: function(id) {
+        var image = this.collection.get(id);
+        ImageGallery.editImage(image);
     }
 });
 
@@ -226,6 +231,13 @@ ImageGallery.addImage = function(images) {
 //    $("#main").html(addImageView.el);
     ImageGallery.mainRegion.show(addImageView);
 };
+
+ImageGallery.editImage = function(image) {
+    var editImageView = new ImageGallery.EditImageView({model: image});
+    editImageView.render();
+    ImageGallery.mainRegion.show(editImageView);
+};
+
 
 ImageGallery.showImage = function(image) {
     var imageView = new ImageGallery.ImageView({
