@@ -20,6 +20,7 @@ ImageGallery.Image = Backbone.Model.extend({
 
 // ImageGallery.vent = _.extend({}, Backbone.Events);
 ImageGallery.ImageCollection= Backbone.Collection.extend({
+    url: "/images",
     model: ImageGallery.Image,
     initialize: function() {
         ImageGallery.vent.bind("image:previous", this.previousImage, this );
@@ -115,6 +116,7 @@ ImageGallery.ImageListView = Backbone.View.extend({
         _.bindAll(this, "renderImage");
 //        this.template = $(this.template);
         this.collection.bind("add", this.renderImage, this);
+        this.collection.bind("reset", this.render, this);
     },
     
     renderImage: function(image){        
@@ -226,11 +228,13 @@ ImageGallery.MainRegion = function() {
     }
 };
 */
-ImageGallery.addInitializer(function(options){    
-    var images = new ImageGallery.ImageCollection(options.imageData);    
+ImageGallery.addInitializer(function(){ 
+// ImageGallery.addInitializer(function(options){    
+    var images = new ImageGallery.ImageCollection();
+//    var images = new ImageGallery.ImageCollection(options.imageData);    
     // var image = new ImageGallery.Image();
 
-    ImageGallery.addImage(images);
+//    ImageGallery.addImage(images);
 
     images.bind("add", function(){ImageGallery.addImage(images)}); // important bind technique
     
@@ -244,7 +248,7 @@ ImageGallery.addInitializer(function(options){
     $("#image-list").html(imageListView.el);
       
     var router = new ImageGallery.Router({collection:images});
-
+    images.fetch();
 });
 
 ImageGallery.bind("initialize:after", function() {

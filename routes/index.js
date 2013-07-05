@@ -22,7 +22,9 @@ exports.postAnImage = function(req, res, next) {
         description: req.body.description
     };
     image = imageData.add(image);
-    res.end(JSON.stringify(image, null, 2));
+    res.set("Content-Type", "text/json");
+    res.json(image);
+//    res.end(JSON.stringify(image, null, 2));
 };
 
 exports.getAnImage = function(req, res, next) {
@@ -31,7 +33,29 @@ exports.getAnImage = function(req, res, next) {
 
 exports.deleteAnImage = function(req, res, next) {
     imageData.delete(req.query.id);
-    res.end(req.query.id);
+    res.type('json');
+    res.json(200, {}); // can also send, for example, res.json(500, {error, 'message'})
+/*    
+    // Perform content-negotiation on the request Accept header field
+    // This method uses req.accepted, an array of acceptable types ordered by their quality values,
+    // otherwises the first callback is involked.
+    // When no match is performed, the server response with 406 'Not Acceptable', or
+    // invokes the default callback
+    res.format ({
+        'text/plain': function () { // can also be text:
+            res.end('hey');
+        },
+        'text/html': function () { // can also be html:
+            res.send('key');
+        },
+        'application/json': function() { // can also be json:
+            res.send({message: 'hey'});
+        },
+        'default' : function() {
+            // some default code
+        }
+    });
+*/
 };
 
 exports.updateAnImage = function(req, res, next) {
@@ -42,5 +66,6 @@ exports.updateAnImage = function(req, res, next) {
         description: req.body.description
     };   
     imageData.update(image);
-    res.end(JSON.stringify(image, null, 2));
+    res.json(200, image);
+//    res.end(JSON.stringify(image, null, 2));
 };

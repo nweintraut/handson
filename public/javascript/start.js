@@ -27,5 +27,6 @@
     ];
 */    
 $(function(){
-    ImageGallery.start({imageData: imageData});
+    ImageGallery.start();
+//    ImageGallery.start({imageData: imageData});
 });

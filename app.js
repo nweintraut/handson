@@ -18,10 +18,11 @@ app.configure(function(){
   app.set('view engine', 'jade');
   app.use(express.favicon());
   app.use(express.logger('dev'));
+  app.use(express.static(path.join(__dirname, 'public')));  
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
+
 });
 
 app.configure('development', function(){
@@ -29,15 +30,12 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
-app.get('/images', function(req, res, next){
-   // get list of images; 
-});
 
-app.get("/image", routes.imageList);
-app.post("/image", routes.postAnImage);
-app.get("/image/:id", routes.getAnImage);
-app.delete("/image/:id", routes.deleteAnImage);
-app.put("/image/:id", routes.updateAnImage);
+app.get("/images", routes.imageList);
+app.post("/images", routes.postAnImage);
+app.get("/images/:id", routes.getAnImage);
+app.delete("/images/:id", routes.deleteAnImage);
+app.put("/images/:id", routes.updateAnImage);
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
