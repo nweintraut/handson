@@ -1,6 +1,9 @@
 extends layout
 
 block content
+  script.
+    var imageData = !{images}
+
   script(type="text/x-jquery-tmp", id="image-view-template").
     <h2>${name}</h2>
     <div class="nav-previous"><a href="#">&gt;</div>
@@ -40,7 +43,7 @@ block content
         <span class="image-label">${name}</span>
       </a>
     </li>
-
+  script(src="/javascript/start.js", type="text/javascript")
   #container
     #header
       ul#menu

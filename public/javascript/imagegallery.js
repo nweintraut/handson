@@ -1,7 +1,11 @@
 /*global Backbone, jQuery, _ */
 
-var ImageGallery = ImageGallery || {};
+// var ImageGallery = ImageGallery || {};
+var ImageGallery = ImageGallery || new Backbone.Marionette.Application();
 
+ImageGallery.addRegions({
+    mainRegion: "#main"
+});
 ImageGallery.Image = Backbone.Model.extend({
     select: function() {
         if(this.get("selected")) return;
@@ -14,7 +18,7 @@ ImageGallery.Image = Backbone.Model.extend({
     }
 });
 
-ImageGallery.vent = _.extend({}, Backbone.Events);
+// ImageGallery.vent = _.extend({}, Backbone.Events);
 ImageGallery.ImageCollection= Backbone.Collection.extend({
     model: ImageGallery.Image,
     initialize: function() {
@@ -213,7 +217,7 @@ ImageGallery.showImage = function(image) {
 //    $("#main").html(imageView.el);
     ImageGallery.mainRegion.show(imageView);
 };
-
+/*
 ImageGallery.MainRegion = function() {
     this.el = $("#main");
     this.show = function(view) {
@@ -221,36 +225,9 @@ ImageGallery.MainRegion = function() {
         this.el.html(view.el);
     }
 };
-
-$(function() {
-    ImageGallery.mainRegion = new ImageGallery.MainRegion();
-    var imageData = [
-        {
-            id: 1,
-            url: "/images/island.jpeg",
-            name: "Some island",
-        },
-        {
-            id: 2,
-            url: "/images/mountain.jpeg",
-            name: "A mountain",
-            description: "A mountin with a grassy hill and tree in front of it."
-        },
-        {
-            id: 3,
-            url: "/images/tools.jpeg",
-            name: "A rusty wrench",
-            description: "A close up view of a rusty wrench with great color and texture."
-        }, 
-        {
-            id: 4,
-            url: "images/tree.jpeg",
-            name: "A purple flower",
-            description: "A purple flower with a water drop hanging off another plant."
-        }
-    ];
-    
-    var images = new ImageGallery.ImageCollection(imageData);    
+*/
+ImageGallery.addInitializer(function(options){    
+    var images = new ImageGallery.ImageCollection(options.imageData);    
     // var image = new ImageGallery.Image();
 
     ImageGallery.addImage(images);
@@ -267,6 +244,9 @@ $(function() {
     $("#image-list").html(imageListView.el);
       
     var router = new ImageGallery.Router({collection:images});
-    Backbone.history.start();
 
+});
+
+ImageGallery.bind("initialize:after", function() {
+    Backbone.history.start();    
 });

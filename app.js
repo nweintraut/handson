@@ -9,6 +9,7 @@ var express = require('express')
   , http = require('http')
   , path = require('path');
 
+var imageData = require('./models/image.js');
 var app = express();
 
 app.configure(function(){
@@ -28,6 +29,15 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
+app.get('/images', function(req, res, next){
+   // get list of images; 
+});
+
+app.get("/image", routes.imageList);
+app.post("/image", routes.postAnImage);
+app.get("/image/:id", routes.getAnImage);
+app.delete("/image/:id", routes.deleteAnImage);
+app.put("/image/:id", routes.updateAnImage);
 app.get('/users', user.list);
 
 http.createServer(app).listen(app.get('port'), function(){
