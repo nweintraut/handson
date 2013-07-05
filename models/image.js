@@ -39,6 +39,7 @@ exports.addImage = function(newImage){
 };
 
 exports.update = function(image) {
+    console.log("Image ID is: " + image.id);
     imageData[image.id] = image;
     return image;
 };

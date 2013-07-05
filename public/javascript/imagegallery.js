@@ -9,9 +9,10 @@ ImageGallery.addRegions({
 ImageGallery.Image = Backbone.Model.extend({
     urlRoot: "/images",
     select: function() {
-        if(this.get("selected")) return;
-        this.set({selected: true});
-        this.collection.select(this);
+        if(!this.get("selected")) {
+            this.set({selected: true});
+            this.collection.select(this);
+        }
         ImageGallery.vent.trigger("image:selected", this);
     },
     deselect: function() {
@@ -59,9 +60,9 @@ ImageGallery.ImageCollection= Backbone.Collection.extend({
     }
 });
 
-ImageGallery.AddImageView = Backbone.View.extend ({
+ImageGallery.AddEditImageView = Backbone.View.extend ({
     id: "add-image-form",
-    template: "#add-image-template",
+//    template: "#add-image-template",
     
     events: {
         "change #name": "nameChanged",
@@ -69,8 +70,9 @@ ImageGallery.AddImageView = Backbone.View.extend ({
         "change #url": "urlChanged",
         "click #save": "saveImage"
     },
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this,"saveSuccess", "saveError");
+        this.template = options.template;
     },
     nameChanged: function(e){
         var value = $(e.currentTarget).val();
@@ -98,14 +100,20 @@ ImageGallery.AddImageView = Backbone.View.extend ({
 
     },
     saveSuccess: function(image, response, xhrObjectfromXHRCall) {
-        this.collection.add(image);
+        if (this.colleciton && !this.colleciton.include(image)) {
+            this.collection.add(image);
+        }
         image.select();
     },
     saveError:  function(image, response, xhrObjectfromXHRCall) {
         alert("Error" + response);
     },
     render: function(){
-        var html = $(this.template).tmpl();
+        var data;
+        if(this.model) {
+            data = this.model.toJSON();
+        }
+        var html = $(this.template).tmpl(data);
         $(this.el).html(html);
     }
 });
@@ -211,6 +219,7 @@ ImageGallery.ImagePreview = Backbone.View.extend({
     initialize: function() {      
         this.template = $(this.template);  
         this.model.bind("change:selected", this.imageSelected, this);
+        this.model.bind("change", this.render, this);
 
     },
     imageSelected: function(){
@@ -226,14 +235,21 @@ ImageGallery.ImagePreview = Backbone.View.extend({
 ImageGallery.addImage = function(images) {
     images.deselect();
     var image = new ImageGallery.Image();
-    var addImageView = new ImageGallery.AddImageView({model: image, collection: images});
+    var addImageView = new ImageGallery.AddEditImageView({
+        model: image, 
+        collection: images,
+        template: "#add-image-template"
+    });
     addImageView.render();
 //    $("#main").html(addImageView.el);
     ImageGallery.mainRegion.show(addImageView);
 };
 
 ImageGallery.editImage = function(image) {
-    var editImageView = new ImageGallery.EditImageView({model: image});
+    var editImageView = new ImageGallery.AddEditImageView({
+        model: image,
+        template: "#edit-image-template"
+    });
     editImageView.render();
     ImageGallery.mainRegion.show(editImageView);
 };
