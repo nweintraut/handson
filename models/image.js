@@ -3,6 +3,7 @@ var imageData = [
         id: 0,
         url: "/images/island.jpeg",
         name: "Some island",
+        description: "What happened"
     },
     {
         id: 1,
