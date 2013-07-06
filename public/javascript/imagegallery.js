@@ -215,15 +215,21 @@ ImageGallery.ImagePreview = Backbone.View.extend({
     initialize: function() {      
         this.template = $(this.template);  
         this.model.bind("change:selected", this.imageSelected, this);
-//        this.model.bind('change', this.render, this);
+        this.model.bind('change', this.render, this);
 
     },
     imageSelected: function(){
-        this.$("img").toggleClass("selected");
+        this.$("img").toggleClass("selected");       
     },
     render: function(){
         var html = this.template.tmpl(this.model.toJSON());
-        $(this.el).html(html);  
+        $(this.el).html(html); 
+        // Monkey patch. If render occurs after imageSelected toggles the class,
+        // the toggle is overwritten by an unselected html code.
+        if (this.model.get("selected") && !this.$("img").hasClass("selected")) {
+            this.$("img").addClass("selected");
+        }
+ 
     }
 });
 
