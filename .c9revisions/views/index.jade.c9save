@@ -23,3 +23,4 @@
 {"ts":1373091493220,"patch":[[{"diffs":[[0,".\n      <h1>"],[-1,"Add"],[1,"Edit"],[0," Image"],[1," ${id}"],[0,"</h1>\n      "]],"start1":579,"start2":579,"length1":33,"length2":40}]],"length":2786,"saved":false}
 {"ts":1373091507879,"patch":[[{"diffs":[[0,"img id=\"preview\""],[1," src=\"${url}\""],[0,">\n          </di"]],"start1":877,"start2":877,"length1":32,"length2":45}]],"length":2799,"saved":false}
 {"ts":1373091640219,"patch":[[{"diffs":[[0,"ription}"],[-1,"\""],[0,"</div>\n "]],"start1":399,"start2":399,"length1":17,"length2":16}]],"length":2798,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1373094527958,"patch":[[{"diffs":[[0,"       <a href=\""],[-1,"/"],[1,"#images/${id}"],[0,"\" id=\"cancel\">ca"]],"start1":1284,"start2":1284,"length1":33,"length2":45}]],"length":2810,"saved":false}

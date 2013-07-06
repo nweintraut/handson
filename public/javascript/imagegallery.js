@@ -8,6 +8,11 @@ ImageGallery.addRegions({
 });
 ImageGallery.Image = Backbone.Model.extend({
     urlRoot: "/images",
+    initialize: function() {
+        var memento = new Backbone.Memento(this);
+        _.extend(this, memento);
+        
+    },
     select: function() {
         if(!this.get("selected")) {
             this.set({selected: true}, {silent: true});
@@ -70,11 +75,14 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
         "change #name": "nameChanged",
         "change #description": "descriptionChanged",
         "change #url": "urlChanged",
-        "click #save": "saveImage"
+        "click #save": "saveImage",
+        "click #cancel": "cancel"
     },
     initialize: function(options) {
         _.bindAll(this,"saveSuccess", "saveError");
         this.template = options.template;
+        this.model.store();
+        
     },
     nameChanged: function(e){
         var value = $(e.currentTarget).val();
@@ -96,6 +104,12 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
             error: this.saveError
         });
   
+    },
+    cancel: function(e){
+        e.preventDefault();
+        this.model.restore();
+        this.model.select();
+        
     },
     saveSuccess: function(image, response, xhrObjectfromXHRCall) {
         if (this.collection && !this.collection.include(image)) {
@@ -183,7 +197,7 @@ ImageGallery.Router = Backbone.Router.extend({
         "": "newImage",
         "images/new": "newImage",
         "images/:id": "showImage",
-        "images/:id/edit": "editImage"
+        "images/:id/edit": "editImage",
     },
     initialize: function(options) {
         this.collection = options.collection;
