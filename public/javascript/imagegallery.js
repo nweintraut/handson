@@ -9,9 +9,10 @@ ImageGallery.addRegions({
 ImageGallery.Image = Backbone.Model.extend({
     urlRoot: "/images",
     select: function() {
-        if(this.get("selected")) return;
-        this.set({selected: true});
-        this.collection.select(this);
+        if(!this.get("selected")) {
+            this.set({selected: true});
+            this.collection.select(this);
+        }
         ImageGallery.vent.trigger("image:selected", this);
     },
     deselect: function() {
@@ -95,7 +96,7 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
   
     },
     saveSuccess: function(image, response, xhrObjectfromXHRCall) {
-        if (this.collection && !this.collection.indluce(image)) {
+        if (this.collection && !this.collection.include(image)) {
             this.collection.add(image);           
         }
         image.select();
@@ -214,6 +215,7 @@ ImageGallery.ImagePreview = Backbone.View.extend({
     initialize: function() {      
         this.template = $(this.template);  
         this.model.bind("change:selected", this.imageSelected, this);
+//        this.model.bind('change', this.render, this);
 
     },
     imageSelected: function(){
