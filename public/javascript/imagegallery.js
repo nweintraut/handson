@@ -10,13 +10,15 @@ ImageGallery.Image = Backbone.Model.extend({
     urlRoot: "/images",
     select: function() {
         if(!this.get("selected")) {
-            this.set({selected: true});
+            this.set({selected: true}, {silent: true});
+            this.trigger("selected");
             this.collection.select(this);
         }
         ImageGallery.vent.trigger("image:selected", this);
     },
     deselect: function() {
-        this.unset("selected");
+        this.unset("selected", {silent: true});
+        this.trigger("deselected");
     }
 });
 
@@ -214,12 +216,16 @@ ImageGallery.ImagePreview = Backbone.View.extend({
     },
     initialize: function() {      
         this.template = $(this.template);  
-        this.model.bind("change:selected", this.imageSelected, this);
+        this.model.bind("selected", this.imageSelected, this);
+        this.model.bind("deselected", this.imageDeselected, this);
         this.model.bind('change', this.render, this);
 
     },
     imageSelected: function(){
-        this.$("img").toggleClass("selected");       
+        this.$("img").addClass("selected");       
+    },
+    imageDeselected: function() {
+        this.$("img").removeClass("selected");        
     },
     render: function(){
         var html = this.template.tmpl(this.model.toJSON());
