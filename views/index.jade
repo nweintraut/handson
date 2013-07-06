@@ -9,7 +9,12 @@ block content
     <div class="nav-previous"><a href="#">&gt;</div>
     <div class="nav-next"><a href="#">&lt;</a></div>
     <img src="${url}" width="300" height="200" alt="${description}">
-    <div class="description">${description}"</div>
+    <div class="image-footer">
+        <div class="description">${description}"</div>
+        <div class="edit">
+            <a href="#images/${id}/edit">Edit</a>
+        </div>
+    </div>
   script(type="text/x-jquery-tmp", id="add-image-template").
       <h1>Add Image</h1>
       <ul>

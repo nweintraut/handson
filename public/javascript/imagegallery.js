@@ -87,9 +87,6 @@ ImageGallery.AddImageView = Backbone.View.extend ({
     },
     saveImage: function(e){
         e.preventDefault();
- //       var name = this.model.get("name");
- //       var desc = this.model.get("description");
- //       var url  = this.model.get("url");
         this.model.save(undefined, { // could specify model's own attributes.
             success: this.saveSuccess,
             error: this.saveError

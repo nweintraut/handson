@@ -33,6 +33,7 @@ app.get('/', routes.index);
 
 app.get("/images", routes.imageList);
 app.post("/images", routes.postAnImage);
+app.get("images/:id/edit", routes.edit);
 app.get("/images/:id", routes.getAnImage);
 app.delete("/images/:id", routes.deleteAnImage);
 app.put("/images/:id", routes.updateAnImage);

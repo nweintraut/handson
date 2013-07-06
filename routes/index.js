@@ -30,9 +30,13 @@ exports.postAnImage = function(req, res, next) {
 exports.getAnImage = function(req, res, next) {
     
 };
+exports.edit = function(req, res, next) {
+    var image = imageData.getImage(req.params.id);
+    res.json(image);
+};
 
 exports.deleteAnImage = function(req, res, next) {
-    imageData.delete(req.query.id);
+    imageData.delete(req.params.id);
     res.type('json');
     res.json(200, {}); // can also send, for example, res.json(500, {error, 'message'})
 /*    
@@ -60,7 +64,7 @@ exports.deleteAnImage = function(req, res, next) {
 
 exports.updateAnImage = function(req, res, next) {
     var image = {
-        id: req.query.id,
+        id: req.params.id,
         url: req.body.url,
         name: req.body.name,
         description: req.body.description

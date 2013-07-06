@@ -3,6 +3,7 @@ var imageData = [
         id: 0,
         url: "/images/island.jpeg",
         name: "Some island",
+        description: "Description of some island"
     },
     {
         id: 1,
@@ -18,7 +19,7 @@ var imageData = [
     }, 
     {
         id: 3,
-        url: "images/tree.jpeg",
+        url: "images/flower.jpeg",
         name: "A purple flower",
         description: "A purple flower with a water drop hanging off another plant."
     }
@@ -36,6 +37,9 @@ exports.addImage = function(newImage){
     newImage.id = length();
     imageData.push(newImage);
     return newImage;
+};
+exports.getImage = function(id) {
+    return imageData[id];
 };
 
 exports.update = function(image) {
