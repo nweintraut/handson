@@ -58,10 +58,10 @@ ImageGallery.ImageCollection= Backbone.Collection.extend({
         }        
     }
 });
-
-ImageGallery.AddImageView = Backbone.View.extend ({
+/***************************/
+ImageGallery.AddEditImageView = Backbone.View.extend ({
     id: "add-image-form",
-    template: "#add-image-template",
+//    template: "#add-image-template",
     
     events: {
         "change #name": "nameChanged",
@@ -69,8 +69,9 @@ ImageGallery.AddImageView = Backbone.View.extend ({
         "change #url": "urlChanged",
         "click #save": "saveImage"
     },
-    initialize: function() {
+    initialize: function(options) {
         _.bindAll(this,"saveSuccess", "saveError");
+        this.template = options.template;
     },
     nameChanged: function(e){
         var value = $(e.currentTarget).val();
@@ -91,22 +92,27 @@ ImageGallery.AddImageView = Backbone.View.extend ({
             success: this.saveSuccess,
             error: this.saveError
         });
-   
-
+  
     },
     saveSuccess: function(image, response, xhrObjectfromXHRCall) {
-        this.collection.add(image);
+        if (this.collection && !this.collection.indluce(image)) {
+            this.collection.add(image);           
+        }
         image.select();
     },
     saveError:  function(image, response, xhrObjectfromXHRCall) {
         alert("Error" + response);
     },
     render: function(){
-        var html = $(this.template).tmpl();
+        var data;
+        if(this.model) {
+            data = this.model.toJSON();
+        }
+        var html = $(this.template).tmpl(data);
         $(this.el).html(html);
     }
 });
-
+/****************************/
 ImageGallery.ImageListView = Backbone.View.extend({
     tagName: "ul",
 //    template: "#image-preview-template",
@@ -223,16 +229,19 @@ ImageGallery.ImagePreview = Backbone.View.extend({
 ImageGallery.addImage = function(images) {
     images.deselect();
     var image = new ImageGallery.Image();
-    var addImageView = new ImageGallery.AddImageView({
+    var addImageView = new ImageGallery.AddEditImageView({
         model: image, 
-        collection: images});
+        collection: images,
+        template: "#add-image-template"
+    });
 //    addImageView.render();
     ImageGallery.mainRegion.show(addImageView);
 };
 /********************/
 ImageGallery.editImage = function(image) {
-    var editImageView = new ImageGallery.EditImageView({
-        model: image
+    var editImageView = new ImageGallery.AddEditImageView({
+        model: image,
+        template: "#edit-image-template"
     });
 //    addImageView.render();
     ImageGallery.mainRegion.show(editImageView);
