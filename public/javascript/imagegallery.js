@@ -108,8 +108,11 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
     cancel: function(e){
         e.preventDefault();
         this.model.restore();
+        if(this.model.isNew()) {
+            this.render();
+        } else {
         this.model.select();
-        
+        }
     },
     saveSuccess: function(image, response, xhrObjectfromXHRCall) {
         if (this.collection && !this.collection.include(image)) {
