@@ -5,12 +5,14 @@ var imageData = [
         name: "Some island",
         description: "Description of some island"
     },
+
     {
         id: 1,
         url: "/images/mountain.jpeg",
         name: "A mountain",
         description: "A mountin with a grassy hill and tree in front of it."
     },
+
     {
         id: 2,
         url: "/images/tools.jpeg",
@@ -47,5 +49,5 @@ exports.update = function(image) {
     return image;
 };
 exports.delete = function(id) {
-    delete imageData[id];
+        imageData.splice(id, 1);
 };

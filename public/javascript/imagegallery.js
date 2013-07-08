@@ -34,6 +34,15 @@ ImageGallery.ImageCollection= Backbone.Collection.extend({
     initialize: function() {
         ImageGallery.vent.bind("image:previous", this.previousImage, this );
         ImageGallery.vent.bind("image:next", this.nextImage, this);
+        this.bind("remove", this.imageDeleted, this);
+    },
+    imageDeleted: function() {
+        if (this.length > 0) {
+        this.previousImage();
+        } else {
+            this.trigger("cleared");
+        }
+        
     },
     previousImage: function() {
         var index = this.indexOf(this.selectedImage);
@@ -76,7 +85,8 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
         "change #description": "descriptionChanged",
         "change #url": "urlChanged",
         "click #save": "saveImage",
-        "click #cancel": "cancel"
+        "click #cancel": "cancel",
+        "click #destroy": "deleteImage"
     },
     initialize: function(options) {
         _.bindAll(this,"saveSuccess", "saveError");
@@ -104,6 +114,11 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
             error: this.saveError
         });
   
+    },
+    deleteImage: function(e) {
+        console.log("Made it");
+        e.preventDefault();
+        this.model.destroy();
     },
     cancel: function(e){
         e.preventDefault();
@@ -236,7 +251,11 @@ ImageGallery.ImagePreview = Backbone.View.extend({
         this.model.bind("selected", this.imageSelected, this);
         this.model.bind("deselected", this.imageDeselected, this);
         this.model.bind('change', this.render, this);
+        this.model.bind("remove", this.imageDeleted, this);
 
+    },
+    imageDeleted: function() {
+        this.remove();
     },
     imageSelected: function(){
         this.$("img").addClass("selected");       
@@ -307,6 +326,9 @@ ImageGallery.addInitializer(function(options){
     ImageGallery.addImage(images);
 
     images.bind("add", function(){ImageGallery.addImage(images)}); // important bind technique
+    images.bind('cleared', function() {
+       ImageGallery.addImage(images); 
+    });
     
     ImageGallery.vent.bind("image:selected", function(image) {
         ImageGallery.showImage(image);
