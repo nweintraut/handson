@@ -91,7 +91,7 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
     initialize: function(options) {
         _.bindAll(this,"saveSuccess", "saveError");
         this.template = options.template;
-        this.model.store();
+        this.model.store(); // store is local to browser; save goes to server
         
     },
     nameChanged: function(e){
@@ -116,9 +116,13 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
   
     },
     deleteImage: function(e) {
-        console.log("Made it");
         e.preventDefault();
-        this.model.destroy();
+        this.model.destroy({
+            error: this.deleteError
+        });
+    },
+    deleteError: function() {
+        ImageGallery.showError("Error deleting image");
     },
     cancel: function(e){
         e.preventDefault();
@@ -136,7 +140,7 @@ ImageGallery.AddEditImageView = Backbone.View.extend ({
         image.select();
     },
     saveError:  function(image, response, xhrObjectfromXHRCall) {
-        alert("Error" + response);
+        ImageGallery.showError("Error Saving Image");
     },
     render: function(){
         var data;
@@ -210,6 +214,18 @@ ImageGallery.ImageView = Backbone.View.extend({
     
 });
 
+ImageGallery.ErrorView = Backbone.View.extend({
+    template: "#error-view-template",
+    className: "error",
+    render: function(){
+        var data = {message: this.options.message};
+
+        var html = $(this.template).tmpl(data);
+
+        $(this.el).html(html);
+    }
+});
+
 ImageGallery.Router = Backbone.Router.extend({
     routes: {
         "": "newImage",
@@ -222,18 +238,31 @@ ImageGallery.Router = Backbone.Router.extend({
     },
     showImage: function(id) {
         var image = this.collection.get(id);
-        image.select();
-        ImageGallery.showImage(image);
+        if (image) {
+            image.select();
+            ImageGallery.showImage(image);
+        } else {
+            ImageGallery.showError("Image # " + id + " Not Found");
+        }
     },
     newImage: function(){
         ImageGallery.addImage(this.collection);
     },
     editImage: function(id) {
         var image = this.collection.get(id);
-        ImageGallery.editImage(image);
+        if(image){
+            ImageGallery.editImage(image);
+        } else {
+            ImageGallery.showError("Image #" + id + " Not Found");
+        }
     }
 });
-
+ImageGallery.showError = function(message) {
+    var errorView = new ImageGallery.ErrorView({
+        message: message
+    });
+    ImageGallery.mainRegion.show(errorView);
+};
 ImageGallery.ImagePreview = Backbone.View.extend({
     template: "#image-preview-template",
 //    template: '<li><a href="#" data-id="${id}"><img src="${url}" width="150" height="100" alt="${description}"><span class="image-label">${name}</span></a></li>',

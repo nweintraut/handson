@@ -15,7 +15,11 @@ block content
             <a href="#images/${id}/edit">Edit</a>
         </div>
     </div>
-
+  script(type="text/x-jquery-tmp", id="error-view-template").
+    <h1>Error</h1>
+    <p>
+      ${message}
+    </p>
   script(type="text/x-jquery-tmp", id="edit-image-template").
       <h1>Edit Image ${id}</h1>
       <ul>

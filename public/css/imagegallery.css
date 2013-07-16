@@ -23,6 +23,14 @@ a{
   overflow: scroll;
 }
 
+.error {
+border: 5px solid #222;
+    text-align: center;
+    background-color: rgb(255,0, 71);
+}
+.error h1 {
+    font-size: 48pt;
+}
 #header {
   background-color: #555;
 }
